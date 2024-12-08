@@ -19,10 +19,10 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderItemId;
 
-    @NotNull(message = "Order is mandatory!")
+    @NotNull(message = "Orders is mandatory!")
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    private Orders orders;
 
     @NotNull(message = "Product is mandatory!")
     @ManyToOne

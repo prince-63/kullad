@@ -21,10 +21,10 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentId;
 
-    @NotNull(message = "Order is mandatory!")
+    @NotNull(message = "Orders is mandatory!")
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    private Orders orders;
 
     @NotNull(message = "Amount is mandatory!")
     @Min(value = 0, message = "Amount must be positive!")

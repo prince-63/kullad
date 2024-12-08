@@ -2,6 +2,7 @@ package com.kullad.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kullad.annotation.PasswordValidator;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -39,4 +40,7 @@ public class User {
     @NotNull(message = "Role is mandatory!")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Nullable
+    private String verificationCode;
 }
