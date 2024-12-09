@@ -1,5 +1,7 @@
 package com.kullad.exceptions;
 
+import com.kullad.constants.StatusCodeConstants;
+import com.kullad.constants.StatusMessageConstants;
 import com.kullad.dto.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +20,9 @@ public class GlobalExceptionHandler {
     ) {
         ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder()
                 .apiPath(request.getDescription(false))
-                .errorCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                .errorCode(StatusCodeConstants.INTERNAL_SERVER_ERROR)
                 .errorTimestamp(LocalDateTime.now())
-                .errorMessage(ex.getMessage())
+                .errorMessage(StatusMessageConstants.ERROR + " : " + ex.getMessage())
                 .build();
         return new ResponseEntity<>(
                 errorResponseDTO, HttpStatus.INTERNAL_SERVER_ERROR
@@ -31,9 +33,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder()
                 .apiPath(request.getDescription(false))
+                .errorCode(StatusCodeConstants.NOT_FOUND)
                 .errorTimestamp(LocalDateTime.now())
-                .errorMessage(ex.getMessage())
-                .errorCode(HttpStatus.NOT_FOUND)
+                .errorMessage(StatusMessageConstants.ERROR + " : " + ex.getMessage())
                 .build();
 
         return new ResponseEntity<>(
@@ -45,9 +47,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex, WebRequest request) {
         ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder()
                 .apiPath(request.getDescription(false))
+                .errorCode(StatusCodeConstants.CONFLICT)
                 .errorTimestamp(LocalDateTime.now())
-                .errorMessage(ex.getMessage())
-                .errorCode(HttpStatus.CONFLICT)
+                .errorMessage(StatusMessageConstants.ERROR + " : " + ex.getMessage())
                 .build();
 
         return new ResponseEntity<>(
