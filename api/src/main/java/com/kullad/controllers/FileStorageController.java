@@ -2,13 +2,15 @@ package com.kullad.controllers;
 
 import com.kullad.services.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/files")
+@RequestMapping("/image")
 public class FileStorageController {
 
     @Autowired
@@ -20,7 +22,7 @@ public class FileStorageController {
             return ResponseEntity.badRequest().body("File cannot be empty.");
         }
         try {
-            String fileName = fileStorageService.storeFile(file);
+            String fileName = fileStorageService.storeImageFile(file);
             return ResponseEntity.ok(fileName);
         }
         catch (Exception e) {
@@ -28,27 +30,29 @@ public class FileStorageController {
         }
     }
 
-    @GetMapping("/download/{fileName}")
-    public ResponseEntity<String> getFile(@PathVariable String fileName) {
+    @GetMapping("/view/{fileName}")
+    public ResponseEntity<byte[]> getImageFile(@PathVariable String fileName) {
         if (fileName.isEmpty()) {
-            return ResponseEntity.badRequest().body("File name cannot be empty.");
+            return ResponseEntity.badRequest().body(null);
         }
         try {
-            String filePath = fileStorageService.getFile(fileName);
-            return ResponseEntity.ok(filePath);
+            byte[] imageData = fileStorageService.getImageFile(fileName);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
         }
         catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
     @DeleteMapping("/delete/{fileName}")
-    public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
+    public ResponseEntity<String> deleteImageFile(@PathVariable String fileName) {
         if (fileName.isEmpty()) {
             return ResponseEntity.badRequest().body("File name cannot be empty.");
         }
         try {
-            String message = fileStorageService.deleteFile(fileName);
+            String message = fileStorageService.deleteImageFile(fileName);
             return ResponseEntity.ok(message);
         }
         catch (Exception e) {

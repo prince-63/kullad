@@ -3,7 +3,7 @@ package com.kullad.services;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileStorageService {
-    String storeFile(MultipartFile file);
-    String getFile(String fileName);
-    String deleteFile(String fileName);
+    String storeImageFile(MultipartFile file);
+    byte[] getImageFile(String fileName);
+    String deleteImageFile(String fileName);
 }

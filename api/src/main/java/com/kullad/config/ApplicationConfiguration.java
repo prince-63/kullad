@@ -7,5 +7,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @Configuration
 @ComponentScan(basePackages = {"com.kullad.aspects"})
 @EnableAspectJAutoProxy
-public class ProjectConfiguration {
+public class ApplicationConfiguration {
+
 }

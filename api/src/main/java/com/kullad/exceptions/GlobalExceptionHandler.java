@@ -40,4 +40,18 @@ public class GlobalExceptionHandler {
                 errorResponseDTO, HttpStatus.NOT_FOUND
         );
     }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex, WebRequest request) {
+        ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder()
+                .apiPath(request.getDescription(false))
+                .errorTimestamp(LocalDateTime.now())
+                .errorMessage(ex.getMessage())
+                .errorCode(HttpStatus.CONFLICT)
+                .build();
+
+        return new ResponseEntity<>(
+                errorResponseDTO, HttpStatus.CONFLICT
+        );
+    }
 }

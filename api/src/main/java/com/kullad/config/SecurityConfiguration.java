@@ -16,6 +16,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((req) ->
                         req.requestMatchers("/files/**").permitAll()
                                 .requestMatchers("/demo").permitAll()
+                                .requestMatchers("/image/**").permitAll()
                 )
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
