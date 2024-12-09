@@ -17,6 +17,7 @@ public class SecurityConfiguration {
                         req.requestMatchers("/files/**").permitAll()
                                 .requestMatchers("/demo").permitAll()
                                 .requestMatchers("/image/**").permitAll()
+                                .requestMatchers("/product/**").permitAll()
                 )
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
