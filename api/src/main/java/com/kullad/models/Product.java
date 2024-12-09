@@ -25,6 +25,12 @@ public class Product extends BaseEntity {
     @NotBlank(message = "Product name is mandatory!")
     private String productName;
 
+    @Size(max = 255, message = "Description cannot exceed 255 characters!")
+    private String productDescription;
+
+    @NotBlank(message = "Product image name is mandatory!")
+    private String productImageName;
+
     @NotNull(message = "Price is mandatory!")
     @Min(value = 0, message = "Price must be positive!")
     private Double productPrice;
@@ -39,7 +45,4 @@ public class Product extends BaseEntity {
 
     @NotBlank(message = "Shop address is mandatory!")
     private String shopAddress;
-
-    @Size(max = 255, message = "Description cannot exceed 255 characters!")
-    private String productDescription;
 }

@@ -59,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
             throw new ResourceNotFoundException("Product with id " + productId + " not found");
         }
         Product currentProduct = getProductById(productId);
-        currentProduct.setProductQuantity(currentProduct.getProductQuantity() + quantity);
+        currentProduct.setProductQuantity(currentProduct.getProductQuantity() - quantity);
         productRepository.save(currentProduct);
     }
 }
