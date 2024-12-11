@@ -1,26 +1,47 @@
 package com.kullad.controllers;
 
+import com.kullad.constants.ApplicationConstants;
+import com.kullad.dto.LoginRequestDTO;
+import com.kullad.dto.LoginResponseDTO;
 import com.kullad.models.Role;
 import com.kullad.models.User;
 import com.kullad.repositories.UserRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class UserController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final Environment env;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody User user) {
+        log.debug(user.toString());
         try {
             String hashPassword = passwordEncoder.encode(user.getPassword());
             user.setPassword(hashPassword);
@@ -40,5 +61,35 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
                     body("An exception occurred: " + ex.getMessage());
         }
+    }
+
+    @RequestMapping("/user")
+    public User getUserDetailsAfterLogin(Authentication authentication) {
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
+        return user.orElse(null);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> apiLogin(@RequestBody LoginRequestDTO loginRequest) {
+        String jwt = "";
+        Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(),
+                loginRequest.password());
+        Authentication authenticationResponse = authenticationManager.authenticate(authentication);
+        if(null != authenticationResponse && authenticationResponse.isAuthenticated()) {
+            if (null != env) {
+                String secret = env.getProperty(ApplicationConstants.JWT_SECRET_KEY,
+                        ApplicationConstants.JWT_SECRET_DEFAULT_VALUE);
+                SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+                jwt = Jwts.builder().issuer("Kullad").subject("JWT Token")
+                        .claim("username", authenticationResponse.getName())
+                        .claim("authorities", authenticationResponse.getAuthorities().stream().map(
+                                GrantedAuthority::getAuthority).collect(Collectors.joining(",")))
+                        .issuedAt(new java.util.Date())
+                        .expiration(new java.util.Date((new java.util.Date()).getTime() + 30000000))
+                        .signWith(secretKey).compact();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).header(ApplicationConstants.JWT_HEADER,jwt)
+                .body(new LoginResponseDTO(HttpStatus.OK.getReasonPhrase(), jwt));
     }
 }
